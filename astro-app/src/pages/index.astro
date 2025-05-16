@@ -2,10 +2,15 @@
 import '../styles/global.css';
 // Component Imports
 import Button from '@/components/astro/Button.astro';
+import { Input } from "@/components/ui/input"
+import Home from "@/components/react/pages/home/home.jsx"
+import Receipt from "@/components/react/pages/receipt/receipt.jsx"
 
 // Full Astro Component Syntax:
 // https://docs.astro.build/basics/astro-components/
 ---
+
+
 
 <html lang="en">
 	<head>
@@ -16,11 +21,15 @@ import Button from '@/components/astro/Button.astro';
 		<title>Split</title>
 	</head>
 
-	<body>
-		<div class="grid place-items-center h-screen content-center">
-			<Button>Tailwind Button in Astro!</Button>
-			<a href="/markdown-page" class="p-4 underline">Markdown is also supported...</a>
-		</div>
+	<body
+		class="
+			dark
+		"
+	>
+
+	<Receipt client:load />
+
+
 	</body>
 
 </html>
