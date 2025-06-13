@@ -1,0 +1,63 @@
+---
+import '../styles/global.css';
+const { title } = Astro.props;
+import { appname, author } from "../lib/utils/constant";
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title}</title>
+	</head>
+	<body class="dark">
+		<header
+			class="
+				flex
+				justify-center
+				py-10
+			"
+		>
+			<h1
+				class="
+					text-yellow-400
+					text-2xl
+					tracking-widest
+				"
+			>
+				<div
+					class="
+						w-8
+						overflow-hidden
+					"
+				>
+					<img 
+						src="../../public/SplitIcon.png"
+						class="
+							object-contain
+							w-max
+							h-max
+						"
+					/>
+				</div>
+			</h1>
+		</header>
+
+		<slot />
+
+		<footer
+			class="
+				py-10
+				px-14
+				flex
+				justify-between
+				text-xs
+			"
+		>
+			<p>&copy; {author} 2025</p>
+			<p>{appname}</p>
+		</footer>
+	</body>
+
+</html>
