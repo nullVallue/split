@@ -527,12 +527,20 @@ export default function ItemList(){
                 onCloseModal={onClickCloseModal}
                 isOpen={showEditModal}
             >
+                <h3
+                    className="
+                        my-5
+                        mx-5
+                    "
+                >
+                    Editing Item...
+                </h3>
                 <form
                     className="
                         w-full
                         flex
                         flex-col
-                        py-20
+                        pb-20
                         px-5
                         gap-y-4
                     "
