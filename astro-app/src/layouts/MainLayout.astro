@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 const { title } = Astro.props;
-import { appname, author } from "../lib/utils/constant";
+import { appname, author, version } from "../lib/utils/constant";
 ---
 
 <html lang="en">
@@ -28,7 +28,7 @@ import { appname, author } from "../lib/utils/constant";
 			>
 				<div
 					class="
-						w-8
+						w-16
 						overflow-hidden
 					"
 				>
@@ -44,19 +44,29 @@ import { appname, author } from "../lib/utils/constant";
 			</h1>
 		</header>
 
-		<slot />
+		<div
+			class="
+				px-2
+				md:px-10
+				lg:px-30
+			"
+		>
+			<slot />
+		</div>
 
 		<footer
 			class="
 				py-10
-				px-14
+				md:px-10
+				lg:px-30
+				px-2
 				flex
 				justify-between
 				text-xs
 			"
 		>
 			<p>&copy; {author} 2025</p>
-			<p>{appname}</p>
+			<p>{appname}&nbsp;&nbsp;{version}</p>
 		</footer>
 	</body>
 
