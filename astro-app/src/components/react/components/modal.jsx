@@ -32,8 +32,7 @@ export default function Modal({onCloseModal = () => {}, children, isOpen = false
                             fixed
                             w-screen
                             h-screen
-                            lg:bg-neutral-950/30
-                            bg-white
+                            bg-neutral-950/30
                             top-0
                             left-0
                             z-40
