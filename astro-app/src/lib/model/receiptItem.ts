@@ -1,5 +1,6 @@
+import { Item } from "@/lib/model/item";
 
-class ReceiptItem {
+export class ReceiptItem {
 
     public readonly item : Item;
     private _quantity : number;

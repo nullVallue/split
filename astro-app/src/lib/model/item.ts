@@ -1,7 +1,7 @@
 
 
 
-class Item {
+export class Item {
 
     public readonly id: number;
     private _name: string;

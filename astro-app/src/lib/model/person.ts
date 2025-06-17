@@ -1,6 +1,8 @@
 
+import { Item } from "@/lib/model/item";
+import { PersonItem } from "@/lib/model/personItem";
 
-class Person {
+export class Person {
 
     private readonly id: number;
     private _name: string;

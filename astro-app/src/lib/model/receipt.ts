@@ -1,5 +1,7 @@
+import { ReceiptItem } from "@/lib/model/receiptItem";
+import { Item } from "@/lib/model/item";
 
-class Receipt {
+export class Receipt {
 
     private _receiptItems : ReceiptItem[];
     private _tax: number;
@@ -64,31 +66,45 @@ class Receipt {
     }
 
 
-    public addItem(item: Item){
+    public addItem(item: Item, quantity: number = 1){
         if(this.checkItemExist(item)){
             this.performActionOnReceiptItem(item, (receiptItem: ReceiptItem) => {
                 receiptItem.increaseQuantity();
             })
         }
         else{
-            this.pushNewReceiptItem(new ReceiptItem(item, 1));
+            this.pushNewReceiptItem(new ReceiptItem(item, quantity));
         }
     }
 
 
-    public removeItem(item: Item){
+    public removeItem(item: Item, removeFromReceipt: boolean = false){
         if(this.checkItemExist(item)){
-            this.performActionOnReceiptItem(item, (receiptItem) => {
-                if(receiptItem.quantity > 1){
-                    receiptItem.decreaseQuantity();
-                }
-                else{
-                    this.removeReceiptItemFromArray(item);
-                }
-            });
+            if(removeFromReceipt){
+                this.removeReceiptItemFromArray(item);
+            }
+            else{
+                this.performActionOnReceiptItem(item, (receiptItem) => {
+                    if(receiptItem.quantity > 1){
+                        receiptItem.decreaseQuantity();
+                    }
+                    else{
+                        this.removeReceiptItemFromArray(item);
+                    }
+                });
+            }
         }
     }
 
+    public updateReceiptItem(receiptItem: ReceiptItem){
+        if(this.checkItemExist(receiptItem.item)){
+            this.performActionOnReceiptItem(receiptItem.item, (rItem) => {
+                rItem.quantity = receiptItem.quantity;
+                rItem.item.name = receiptItem.item.name;
+                rItem.item.price = receiptItem.item.price;
+            })
+        }
+    }
 
 
     public calcTotal(){
