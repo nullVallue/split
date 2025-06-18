@@ -11,30 +11,70 @@ import Modal from "@/components/react/components/modal";
 
 export default function ItemList(){
 
-    const [createFieldVisible, setCreateFieldVisible] = useState<boolean>(false);
-    const [formData, setFormData] = useState<Record<string, string>>({});
-    const [showValidationMessage, setShowValidationMessage] = useState<boolean>(false);
-    const [showEditValidationMessage, setShowEditValidationMessage] = useState<boolean>(false);
-    const itemNameRef = useRef(null);
-    const itemQtyRef = useRef(null);
-    const itemPriceRef = useRef(null);
+    //#region Variables
+    /**--------------------------------------------
+     *               General Vars
+     *---------------------------------------------**/
     const $receipt = useStore(receipt);
+    /*--------------- END OF General Vars --------------*/
+    
+    
+    /**--------------------------------------------
+     *               Valdiation Vars
+     *---------------------------------------------**/
     const validationMessages = {
         name: "Please enter a valid item name",
         price: "Please enter a valid price",
         qty: "Please enter a valid quantity",
     }
     const [validationMsg, setValidationMsg] = useState("");
+    /*--------------- END OF Validation Vars --------------*/
+    
+
+    /**--------------------------------------------
+     *               Create Form Vars
+     *---------------------------------------------**/
+    const [createFieldVisible, setCreateFieldVisible] = useState<boolean>(false);
+    const [formData, setFormData] = useState<Record<string, string>>({});
+    const [showValidationMessage, setShowValidationMessage] = useState<boolean>(false);
+    /*--------------- END OF Create Form Vars --------------*/
+    
+
+    /**--------------------------------------------
+     *               Edit Form Vars
+     *---------------------------------------------**/
+    const [showEditValidationMessage, setShowEditValidationMessage] = useState<boolean>(false);
+    const itemNameRef = useRef(null);
+    const itemQtyRef = useRef(null);
+    const itemPriceRef = useRef(null);
     const [editValidationMsg, setEditValidationMsg] = useState("");
-    const [itemToShowActionMenu, setItemToShowActionMenu] = useState<ReceiptItem | null>(null);
-    const [showActionMenu, setShowActionMenu] = useState<boolean>(false);
-    const [showEditModal, setShowEditModal] = useState<boolean>(false);
     const [editItemName, setEditItemName] = useState("");
     const [editItemQty, setEditItemQty] = useState("");
     const [editItemPrice, setEditItemPrice] = useState("");
 
+    /*--------------- END OF Edit Form Vars --------------*/
+    
 
+    /**--------------------------------------------
+     *               Action Menu Vars
+     *---------------------------------------------**/
+    const [itemToShowActionMenu, setItemToShowActionMenu] = useState<ReceiptItem | null>(null);
+    const [showActionMenu, setShowActionMenu] = useState<boolean>(false);
+    /*--------------- END OF Action Menu Vars --------------*/
+    
+    
+    /**--------------------------------------------
+     *               Modal Vars
+     *---------------------------------------------**/
+    const [showEditModal, setShowEditModal] = useState<boolean>(false);
+    /*--------------- END OF Modal Vars --------------*/
+    //#endregion    
+    
 
+    //#region Create Functions
+    /**------------------------------------------------------------------------
+     *                           Create Functions
+     *------------------------------------------------------------------------**/
     const onClickShowCreateField = () => {
         if(!createFieldVisible){
             setCreateFieldVisible(true);
@@ -50,54 +90,6 @@ export default function ItemList(){
         setCreateFieldVisible(false);
     }
 
-    const onClickShowActionMenu = (receiptItem: ReceiptItem) => {
-        setItemToShowActionMenu(receiptItem);
-        setShowActionMenu(true);
-    }
-
-    const onClickCloseActionMenu = () => {
-        setItemToShowActionMenu(null);
-        setShowActionMenu(false);
-    }
-
-    const onClickEditItem = (receiptItem: ReceiptItem) => {
-        setShowActionMenu(false);
-        setShowEditModal(true);
-        setEditItemName(receiptItem.item.name);
-        setEditItemQty(receiptItem.quantity.toString());
-        setEditItemPrice(receiptItem.item.price.toString());
-    }
-
-    const onClickCloseModal = () => {
-        setShowEditModal(false);
-        setItemToShowActionMenu(null);
-        setShowEditValidationMessage(false);
-        setEditValidationMsg("");
-        setEditItemName("");
-        setEditItemQty("");
-        setEditItemPrice("");
-    }
-
-    const onClickRemoveItem = (receiptItem: ReceiptItem) => {
-        $receipt.removeItem(receiptItem.item, true);
-        setShowActionMenu(false);
-    }
-
-
-    const validateItemName = (str : string): boolean => {
-        return (str.trim() !== "");
-    }
-
-    const validateItemQuantity = (str : string): boolean => {
-        const num = Number(str);
-        return Number.isInteger(num) && num > 0;
-    }
-
-    const validateItemPrice = (str : string):boolean => {
-        const num = Number(str);
-        return !isNaN(num) && num >= 0;
-    }
-
 
     const addNewItemToReceipt = (
         itemName: string, 
@@ -106,20 +98,6 @@ export default function ItemList(){
     ) => {
         const item : Item = new Item(itemName, itemPrice);
         $receipt.addItem(item, itemQty);
-    }
-
-    const updateReceiptItem = (
-        itemName: string, 
-        itemQty: number, 
-        itemPrice: number
-    ) => {
-        let newReceiptItem : ReceiptItem = itemToShowActionMenu!;
-        newReceiptItem.quantity = itemQty;
-        newReceiptItem.item.name = itemName;
-        newReceiptItem.item.price = itemPrice;
-
-        $receipt.updateReceiptItem(newReceiptItem);
-
     }
 
 
@@ -189,6 +167,103 @@ export default function ItemList(){
 
     }
 
+
+    /*---------------------------- END OF Create Functions ----------------------------*/
+    //#endregion
+    
+    
+
+    //#region Action Menu Functions
+    /**------------------------------------------------------------------------
+     *                           Action Menu Functions
+     *------------------------------------------------------------------------**/
+    const onClickShowActionMenu = (receiptItem: ReceiptItem) => {
+        setItemToShowActionMenu(receiptItem);
+        setShowActionMenu(true);
+    }
+
+    const onClickCloseActionMenu = () => {
+        setItemToShowActionMenu(null);
+        setShowActionMenu(false);
+    }
+
+    const onClickEditItem = (receiptItem: ReceiptItem) => {
+        setShowActionMenu(false);
+        setShowEditModal(true);
+        setEditItemName(receiptItem.item.name);
+        setEditItemQty(receiptItem.quantity.toString());
+        setEditItemPrice(receiptItem.item.price.toString());
+    }
+
+    const onClickRemoveItem = (receiptItem: ReceiptItem) => {
+        $receipt.removeItem(receiptItem.item, true);
+        setShowActionMenu(false);
+    }
+    /*---------------------------- END OF Action Menu Functions ----------------------------*/
+    //#endregion
+    
+    
+
+    //#region Modal Functions
+    /**------------------------------------------------------------------------
+     *                           Modal Functions
+     *------------------------------------------------------------------------**/
+    const onClickCloseModal = () => {
+        setShowEditModal(false);
+        setItemToShowActionMenu(null);
+        setShowEditValidationMessage(false);
+        setEditValidationMsg("");
+        setEditItemName("");
+        setEditItemQty("");
+        setEditItemPrice("");
+    }
+    /*---------------------------- END OF Modal Functions ----------------------------*/
+    
+    //#endregion
+    
+
+
+
+    //#region Validation Functions
+    /**------------------------------------------------------------------------
+     *                           Validation Functions
+     *------------------------------------------------------------------------**/
+    const validateItemName = (str : string): boolean => {
+        return (str.trim() !== "");
+    }
+
+    const validateItemQuantity = (str : string): boolean => {
+        const num = Number(str);
+        return Number.isInteger(num) && num > 0;
+    }
+
+    const validateItemPrice = (str : string):boolean => {
+        const num = Number(str);
+        return !isNaN(num) && num >= 0;
+    }
+    /*---------------------------- END OF Validation Functions ----------------------------*/
+    //#endregion
+    
+    
+
+    //#region Update / Edit Functions
+    /**------------------------------------------------------------------------
+     *                           Update/Edit Functions
+     *------------------------------------------------------------------------**/
+
+    const updateReceiptItem = (
+        itemName: string, 
+        itemQty: number, 
+        itemPrice: number
+    ) => {
+        let newReceiptItem : ReceiptItem = itemToShowActionMenu!;
+        newReceiptItem.quantity = itemQty;
+        newReceiptItem.item.name = itemName;
+        newReceiptItem.item.price = itemPrice;
+
+        $receipt.updateReceiptItem(newReceiptItem);
+
+    }
 
 
     const handleEditChange = (e : ChangeEvent<HTMLInputElement>) => {
@@ -262,10 +337,28 @@ export default function ItemList(){
     }
 
 
+    /*---------------------------- END OF Update/Edit Functions ----------------------------*/
+    //#endregion
+    
+    
 
 
+
+
+
+
+
+    //#region UI START
     return(
         <div>
+
+            
+            {
+                //#region Receipt Header
+            }   
+            {/* /**------------------------------------------------------------------------
+             *                           receipt header 
+             *------------------------------------------------------------------------**/}
             {
 
                 ($receipt.receiptItems.length != 0) && (
@@ -346,11 +439,27 @@ export default function ItemList(){
                         </div>
 
 
-
                     </div>
                 )
 
             }
+            {
+                //#endregion
+            }   
+            {/* /*---------------------------- END OF Receipt Head----------------------------*/}
+            
+            
+            
+            
+
+
+
+            {
+                //#region Receipt Body
+            }   
+            {/* /**------------------------------------------------------------------------
+             *                           receipt contents
+             *------------------------------------------------------------------------**/}
 
             {
                 $receipt.receiptItems.map((receiptItem) => {
@@ -507,11 +616,6 @@ export default function ItemList(){
 
                                         )
                                     }
-
-
-
-
-
                                 </div>
 
 
@@ -521,8 +625,21 @@ export default function ItemList(){
                     );
                 })
             }
+            {
+                //#endregion
+            }   
+            {/* /*---------------------------- END OF Receipt Body ----------------------------*/}
 
 
+            
+
+
+            {
+                //#region Edit Modal
+            }   
+            {/* /**------------------------------------------------------------------------
+             *                          Edit Modal 
+             *------------------------------------------------------------------------**/}
             <Modal
                 onCloseModal={onClickCloseModal}
                 isOpen={showEditModal}
@@ -609,7 +726,20 @@ export default function ItemList(){
 
                 </form>
             </Modal>
+            {
+                //#endregion
+            }   
+            {/* /*---------------------------- END OF Edit Modal ----------------------------*/}
 
+
+
+
+            {
+                //#region Create Form
+            }   
+            {/* /**------------------------------------------------------------------------
+             *                         Create Form 
+             *------------------------------------------------------------------------**/}
 
             {
                 createFieldVisible && (
@@ -725,7 +855,15 @@ export default function ItemList(){
                 )
             }
 
+            {
+                //#endregion
+            }   
+            {/* /*---------------------------- END OF Create Form ----------------------------*/}
+
+
+
         </div>
     );
+    //#endregion
     
 }
