@@ -68,6 +68,15 @@ export default function ItemList(){
      *---------------------------------------------**/
     const [showEditModal, setShowEditModal] = useState<boolean>(false);
     /*--------------- END OF Modal Vars --------------*/
+
+
+
+    /**--------------------------------------------
+     *               Receipt Footer Vars
+     *---------------------------------------------**/
+    const [taxField, setTaxField] = useState<string>("");
+    const [showTaxValidationMsg, setShowTaxValidationMessage] = useState<boolean>(false);
+    /*--------------- END OF Receipt Footer Vars --------------*/
     //#endregion    
     
 
@@ -128,6 +137,8 @@ export default function ItemList(){
 
     const onSubmitNewItem = (e : FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        let price : string = formData.itemPrice??"0";
+        let qty : string = formData.itemQty??"1";
 
         let hasError : boolean = false;
 
@@ -136,17 +147,24 @@ export default function ItemList(){
             hasError = !validateItemName(formData.itemName);
             if(hasError) setValidationMsg(validationMessages.name);
         }
-        else if(formData.itemName == null){
+        else if(formData.itemName == null || formData.itemName == ""){
             hasError = true;
             setValidationMsg(validationMessages.name);
         }
 
+
+        if(qty == ""){
+            qty = "0";
+        }
 
         if(formData.itemQty != null && !hasError){
             hasError = !validateItemQuantity(formData.itemQty);
             if(hasError) setValidationMsg(validationMessages.qty);
         }
 
+        if(price == ""){
+            price = "0";
+        }
 
         if(formData.itemPrice != null && !hasError){
             hasError = !validateItemPrice(formData.itemPrice);
@@ -155,8 +173,8 @@ export default function ItemList(){
 
         if(!hasError){
             const itemName : string = formData.itemName;
-            const itemQty : number = Number(formData.itemQty);
-            const itemPrice: number = Number(formData.itemPrice);
+            const itemQty : number = Number(qty);
+            const itemPrice: number = Number(price);
 
             addNewItemToReceipt(itemName, itemQty, itemPrice);
             setCreateFieldVisible(false);
@@ -241,6 +259,11 @@ export default function ItemList(){
         const num = Number(str);
         return !isNaN(num) && num >= 0;
     }
+    
+    const validateTaxInput = (str : string):boolean => {
+        const num = Number(str);
+        return !isNaN(num) && num >= 0;
+    }
     /*---------------------------- END OF Validation Functions ----------------------------*/
     //#endregion
     
@@ -297,35 +320,44 @@ export default function ItemList(){
 
     const onSubmitEditItem = (e : FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        let name : string = editItemName;
+        let price : string = editItemPrice;
+        let qty : string = editItemQty;
 
         let hasError : boolean = false;
 
 
-        if(editItemName != null && !hasError){
-            hasError = !validateItemName(editItemName);
+        if(name != null && !hasError){
+            hasError = !validateItemName(name);
             if(hasError) setValidationMsg(validationMessages.name);
         }
-        else if(editItemName == ""){
+        else if(name == ""){
             hasError = true;
             setValidationMsg(validationMessages.name);
         }
 
+        if(isNaN(Number(qty)) || qty == ""){
+            qty = "1";
+        }
 
-        if(editItemQty != null && !hasError){
-            hasError = !validateItemQuantity(editItemQty);
+        if(qty != null && !hasError){
+            hasError = !validateItemQuantity(qty);
             if(hasError) setValidationMsg(validationMessages.qty);
         }
 
+        if(isNaN(Number(price)) || price == ""){
+            price = "";
+        }
 
-        if(editItemPrice != null && !hasError){
-            hasError = !validateItemPrice(editItemPrice);
+        if(price != null && !hasError){
+            hasError = !validateItemPrice(price);
             if(hasError) setValidationMsg(validationMessages.price);
         }
 
         if(!hasError){
-            const itemName : string = editItemName;
-            const itemQty : number = Number(editItemQty);
-            const itemPrice: number = Number(editItemPrice);
+            const itemName : string = name;
+            const itemQty : number = Number(qty);
+            const itemPrice: number = Number(price);
 
             updateReceiptItem(itemName, itemQty, itemPrice);
             onClickCloseModal();
@@ -342,7 +374,38 @@ export default function ItemList(){
     
     
 
+    //#region Receipt Footer Functions
+    /**------------------------------------------------------------------------
+     *                           Receipt Footer Functions
+     *------------------------------------------------------------------------**/
 
+
+    const handleTaxOnChange = (e : ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+        setTaxField(value);
+        let tax :string = value;
+
+        if(value == ""){
+            tax = "0";
+        }
+
+        if(validateTaxInput(tax)){
+            $receipt.tax = Number(tax);
+            setShowTaxValidationMessage(false);
+        }
+        else{
+            setShowTaxValidationMessage(true);
+        }
+
+    }
+
+
+
+
+    /*---------------------------- END OF Receipt Footer Functions ----------------------------*/
+    //#endregion
+    
+    
 
 
 
@@ -631,6 +694,69 @@ export default function ItemList(){
             {/* /*---------------------------- END OF Receipt Body ----------------------------*/}
 
 
+
+            {
+                //#region Receipt Footer
+            }   
+            {/* /**------------------------------------------------------------------------
+             *                          Receipt Footer
+             *------------------------------------------------------------------------**/}
+
+
+            <div
+                className="
+                    flex
+                    flex-col
+                    gap-y-2
+                "
+            >
+                <div
+                    className="
+                        flex
+                        justify-end
+                        items-center
+                        gap-x-5
+                    "
+                >
+                    <p>Tax : </p>
+                    <Input 
+                        type="number"
+                        className="
+                            [appearance:textfield] 
+                            [&::-webkit-outer-spin-button]:appearance-none 
+                            [&::-webkit-inner-spin-button]:appearance-none
+                            w-1/4
+                            py-0
+                            text-right
+                        "
+                        value={taxField}
+                        onChange={handleTaxOnChange}
+                    />
+                    <p>%</p>
+                </div>
+                <div
+                    className="
+                        flex
+                        justify-end
+                    "
+                >
+                    <p>Total : {($receipt.calcTotal() * ($receipt.tax/100 + 1)).toFixed(2)}</p>
+                </div>
+            </div>
+            {
+                showTaxValidationMsg && (
+                    <p className="text-red-400">Please enter a valid tax amount</p>
+                )
+            }
+
+
+            {/* /*---------------------------- END OF Receipt Footer ----------------------------*/}
+            {
+                //#endregion
+            }   
+
+
+
             
 
 
@@ -704,7 +830,9 @@ export default function ItemList(){
 
                     {
                         showEditValidationMessage && (
-                            <p>
+                            <p
+                                className="text-red-400"
+                            >
                                 {validationMsg}
                             </p>
                         )
@@ -827,7 +955,7 @@ export default function ItemList(){
 
             {
                 showValidationMessage && (
-                    <p>
+                    <p className="text-red-400">
                         {validationMsg}
                     </p>
                 )
